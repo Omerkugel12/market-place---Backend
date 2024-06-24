@@ -1,6 +1,7 @@
 // const fs = require("fs");
-const PRODUCT = require("../data/data.json");
+// const PRODUCT = require("../data/data.json");
 
+const { query } = require("express");
 const Product = require("../models/products.model");
 
 // function makeId() {
@@ -22,9 +23,12 @@ const Product = require("../models/products.model");
 
 async function getProductsCount(req, res) {
   const name = req.query.name || "";
+  const minPrice = req.query.minPrice || 0;
+  const maxPrice = req.query.maxPrice || Number.MAX_SAFE_INTEGER;
   try {
     const count = await Product.countDocuments({
       name: { $regex: name, $options: "i" },
+      price: { $gte: minPrice, $lte: maxPrice },
     });
     res.json({ count });
   } catch (error) {
@@ -37,9 +41,12 @@ async function getProductsCount(req, res) {
 
 async function getProducts(req, res) {
   const name = req.query.name || "";
+  const minPrice = req.query.minPrice || 0;
+  const maxPrice = req.query.maxPrice || Number.MAX_SAFE_INTEGER;
   try {
     const products = await Product.find({
       name: { $regex: name, $options: "i" },
+      price: { $gte: minPrice, $lte: maxPrice },
     });
     res.json(products);
   } catch (error) {
