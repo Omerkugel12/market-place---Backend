@@ -1,1 +1,10 @@
-[{"_id":"6","name":"chair","price":100,"category":"furniture"},{"_id":"7","name":"monitor","price":300,"category":"electronics"},{"_id":"8","name":"mouse","price":50,"category":"electronics"},{"_id":"9","name":"keyboard","price":75,"category":"electronics"}]
+[
+  { "_id": "TPWv1", "name": "AK-47", "price": 100, "category": "weapons" },
+  { "_id": "n1ACQ", "name": "Omer Mazig", "price": 123, "category": "None" },
+  { "_id": "5", "name": "desk", "price": 200, "category": "furniture" },
+  { "_id": "6", "name": "chair", "price": 100, "category": "furniture" },
+  { "_id": "7", "name": "monitor", "price": 300, "category": "electronics" },
+  { "_id": "8", "name": "mouse", "price": 50, "category": "electronics" },
+  { "_id": "9", "name": "keyboard", "price": 75, "category": "electronics" },
+  { "_id": "10", "name": "headphones", "price": 120, "category": "electronics" }
+]
