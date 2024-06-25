@@ -1,13 +1,17 @@
-const { query } = require("express");
+// const { query } = require("express");
 const Product = require("../models/products.model");
 
-// function buildCriteria(query){
-//   const criteria = {}
+function buildCriteria(query) {
+  const criteria = {};
 
-//   if (query.name) {
-//       criteria.name = ($regex: query.name, )
-//   }
-// }
+  if (query.name) {
+    criteria.name = { $regex: query.name, $options: "i" };
+  }
+  if (query.category) {
+    criteria.category = { $regex: query.category, $options: "i" };
+  }
+  return criteria;
+}
 
 async function getProductsCount(req, res) {
   const name = req.query.name || "";
@@ -28,16 +32,21 @@ async function getProductsCount(req, res) {
 }
 
 async function getProducts(req, res) {
-  const name = req.query.name || "";
-  const category = req.query.category || "";
-  const minPrice = req.query.minPrice || 0;
-  const maxPrice = req.query.maxPrice || Number.MAX_SAFE_INTEGER;
+  // const name = req.query.name || "";
+  // const category = req.query.category || "";
+  // const minPrice = req.query.minPrice || 0;
+  // const maxPrice = req.query.maxPrice || Number.MAX_SAFE_INTEGER;
+
+  const { query } = req;
+  const criteria = buildCriteria(query);
+
   try {
-    const products = await Product.find({
-      name: { $regex: name, $options: "i" },
-      price: { $gte: minPrice, $lte: maxPrice },
-      category: { $regex: category, $options: "i" },
-    });
+    const products = await Product.find(
+      criteria
+      // name: { $regex: name, $options: "i" },
+      // price: { $gte: minPrice, $lte: maxPrice },
+      // category: { $regex: category, $options: "i" },
+    );
     res.json(products);
   } catch (error) {
     console.log(
