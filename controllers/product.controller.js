@@ -1,6 +1,14 @@
 const { query } = require("express");
 const Product = require("../models/products.model");
 
+// function buildCriteria(query){
+//   const criteria = {}
+
+//   if (query.name) {
+//       criteria.name = ($regex: query.name, )
+//   }
+// }
+
 async function getProductsCount(req, res) {
   const name = req.query.name || "";
   const minPrice = req.query.minPrice || 0;
@@ -21,12 +29,14 @@ async function getProductsCount(req, res) {
 
 async function getProducts(req, res) {
   const name = req.query.name || "";
+  const category = req.query.category || "";
   const minPrice = req.query.minPrice || 0;
   const maxPrice = req.query.maxPrice || Number.MAX_SAFE_INTEGER;
   try {
     const products = await Product.find({
       name: { $regex: name, $options: "i" },
       price: { $gte: minPrice, $lte: maxPrice },
+      category: { $regex: category, $options: "i" },
     });
     res.json(products);
   } catch (error) {
