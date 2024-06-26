@@ -3,14 +3,10 @@ const { buildCriteria } = require("../helpers/product.helper");
 const Product = require("../models/products.model");
 
 async function getProductsCount(req, res) {
-  const name = req.query.name || "";
-  const minPrice = req.query.minPrice || 0;
-  const maxPrice = req.query.maxPrice || Number.MAX_SAFE_INTEGER;
+  const { query } = req;
+  const criteria = buildCriteria(query);
   try {
-    const count = await Product.countDocuments({
-      name: { $regex: name, $options: "i" },
-      price: { $gte: minPrice, $lte: maxPrice },
-    });
+    const count = await Product.countDocuments(criteria);
     res.json({ count });
   } catch (error) {
     console.log(
@@ -21,21 +17,11 @@ async function getProductsCount(req, res) {
 }
 
 async function getProducts(req, res) {
-  // const name = req.query.name || "";
-  // const category = req.query.category || "";
-  // const minPrice = req.query.minPrice || 0;
-  // const maxPrice = req.query.maxPrice || Number.MAX_SAFE_INTEGER;
-
   const { query } = req;
   const criteria = buildCriteria(query);
 
   try {
-    const products = await Product.find(
-      criteria
-      // name: { $regex: name, $options: "i" },
-      // price: { $gte: minPrice, $lte: maxPrice },
-      // category: { $regex: category, $options: "i" },
-    );
+    const products = await Product.find(criteria);
     res.json(products);
   } catch (error) {
     console.log(
