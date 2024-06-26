@@ -20,8 +20,16 @@ async function getProducts(req, res) {
   const { query } = req;
   const criteria = buildCriteria(query);
 
+  let page = query.page || 1;
+  if (page < 1) {
+    page = 1;
+  }
+
+  const limit = query.limit || 6;
+  const startIndex = (page - 1) * limit || 0;
+
   try {
-    const products = await Product.find(criteria);
+    const products = await Product.find(criteria).skip(startIndex).limit(limit);
     res.json(products);
   } catch (error) {
     console.log(
