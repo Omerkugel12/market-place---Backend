@@ -35,7 +35,7 @@ async function getProductById(req, res) {
   const { id } = req.params;
   try {
     const product = await Product.findById(id);
-    res.json(product);
+    res.status(200).json(product);
   } catch (error) {
     if (error.name === "CastError") {
       console.log(
@@ -55,15 +55,14 @@ async function deleteProduct(req, res) {
   const { id } = req.params;
   try {
     const deletedProduct = await Product.findByIdAndDelete(id);
-
-    if (!deletedProduct) {
+    res.status(200).json({ message: "Product deleted" });
+  } catch (error) {
+    if (error.name === "CastError") {
       console.log(
         `product.controller, deleteProduct. product not found with id: ${id}`
       );
       return res.status(404).json({ message: "product not found" });
     }
-    res.status(200).json({ message: "Product deleted" });
-  } catch (error) {
     console.log(
       `product.controller, deleteProduct. Error while deleting product with id: ${id}`
     );
@@ -76,7 +75,7 @@ async function addProduct(req, res) {
   const newProduct = new Product(productToAdd);
   try {
     const savedProduct = await newProduct.save();
-    res.status(201).json({ savedProduct });
+    res.status(201).json(savedProduct);
   } catch (error) {
     console.log("product.controller, addProduct. Error while creating product");
     if (error.name === "ValidationError") {
@@ -93,14 +92,14 @@ async function editProduct(req, res) {
       new: true,
       runValidators: true,
     });
-    if (!updatedProduct) {
+    res.status(200).json(updatedProduct);
+  } catch (error) {
+    if ((error.name = "CastError")) {
       console.log(
         `product.controller, editProduct. product not found with id: ${id}`
       );
       return res.status(404).json({ message: "product not found" });
     }
-    res.status(200).json(updatedProduct);
-  } catch (error) {
     console.log(
       `product.controller, editProduct. Error while updating Product with id: ${id}`
     );
