@@ -1,6 +1,6 @@
 // const { query } = require("express");
 const { buildCriteria } = require("../helpers/product.helper");
-const Product = require("../models/products.model");
+const Product = require("../models/product.model");
 
 async function getProductsCount(req, res) {
   const { query } = req;

@@ -5,6 +5,7 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const PORT = process.env.PORT || 3000;
 const connectDB = require("./config/db");
+const { verifyToken } = require("./middleware/auth.middleware");
 
 dotenv.config();
 
@@ -24,6 +25,12 @@ async function main() {
 
   const productRoutes = require("./routes/product.route");
   app.use("/api/product", productRoutes);
+
+  const authRoutes = require("./routes/auth.route");
+  const protectedRoutes = require("./routes/protected.route");
+
+  app.use("/api/auth", authRoutes);
+  app.use("/api/protected", verifyToken, protectedRoutes);
 
   // START SERVER
   app.listen(PORT, () => {

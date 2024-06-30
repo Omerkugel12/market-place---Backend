@@ -5,230 +5,278 @@
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
-const Robot = require("./models/products.model");
+const bcrypt = require("bcrypt");
+
+const Product = require("./models/product.model");
+const User = require("./models/user.model");
+
+const SALT_ROUNDS = 10; // Number of rounds to generate salt. 10 is recommended value
 
 dotenv.config(); // Load environment variables
 
-// Sample data
 const products = [
   {
-    id: "P12346",
-    name: "Wireless Headphones",
-    price: 99.99,
-    quantity: 150,
-    category: "Electronics",
-  },
-  {
-    id: "P12348",
-    name: "Smartphone",
-    price: 599.99,
-    quantity: 75,
-    category: "Electronics",
-  },
-  {
-    id: "P12349",
     name: "Laptop",
-    price: 1299.99,
     quantity: 50,
-    category: "Electronics",
+    price: 999.99,
+    categories: ["electronics", "computers"],
   },
   {
-    id: "P12350",
-    name: "Smartwatch",
+    name: "Book",
+    quantity: 0,
+    price: 19.99,
+    categories: ["books"],
+  },
+  {
+    name: "Pen",
+    quantity: 1000,
+    price: 1.49,
+    categories: ["office supplies"],
+  },
+  {
+    name: "Desk",
+    quantity: 0,
     price: 199.99,
-    quantity: 200,
-    category: "Electronics",
+    categories: ["furniture"],
   },
   {
-    id: "P12351",
-    name: "Bluetooth Speaker",
-    price: 49.99,
-    quantity: 300,
-    category: "Electronics",
-  },
-  {
-    id: "P12352",
-    name: "Tablet",
-    price: 299.99,
-    quantity: 100,
-    category: "Electronics",
-  },
-  {
-    id: "P12353",
-    name: "Gaming Console",
-    price: 399.99,
-    quantity: 60,
-    category: "Electronics",
-  },
-  {
-    id: "P12354",
-    name: "Digital Camera",
-    price: 499.99,
-    quantity: 80,
-    category: "Electronics",
-  },
-  {
-    id: "P12355",
-    name: "E-reader",
-    price: 129.99,
-    quantity: 120,
-    category: "Electronics",
-  },
-  {
-    id: "P12356",
-    name: "External Hard Drive",
-    price: 79.99,
-    quantity: 250,
-    category: "Electronics",
-  },
-  {
-    id: "P12357",
-    name: "Wireless Mouse",
-    price: 29.99,
-    quantity: 400,
-    category: "Accessories",
-  },
-  {
-    id: "P12358",
-    name: "Mechanical Keyboard",
-    price: 89.99,
-    quantity: 150,
-    category: "Accessories",
-  },
-  {
-    id: "P12359",
-    name: "Fitness Tracker",
+    name: "Monitor",
+    quantity: 30,
     price: 149.99,
-    quantity: 180,
-    category: "Wearables",
+    categories: ["electronics"],
   },
   {
-    id: "P12360",
-    name: "4K TV",
-    price: 799.99,
-    quantity: 40,
-    category: "Electronics",
+    name: "Headphones",
+    quantity: 100,
+    price: 49.99,
+    categories: ["electronics"],
   },
   {
-    id: "P12361",
-    name: "VR Headset",
-    price: 349.99,
-    quantity: 55,
-    category: "Electronics",
+    name: "Chair",
+    quantity: 10,
+    price: 79.99,
+    categories: ["furniture"],
   },
   {
-    id: "P12362",
-    name: "Portable Charger",
-    price: 24.99,
+    name: "Notebook",
     quantity: 500,
-    category: "Accessories",
+    price: 4.99,
+    categories: ["office supplies"],
   },
   {
-    id: "P12363",
-    name: "Smart Home Hub",
-    price: 99.99,
-    quantity: 140,
-    category: "Smart Home",
+    name: "Backpack",
+    quantity: 25,
+    price: 29.99,
+    categories: ["bags"],
   },
   {
-    id: "P12364",
-    name: "Electric Toothbrush",
-    price: 69.99,
-    quantity: 200,
-    category: "Health",
-  },
-  {
-    id: "P12365",
-    name: "Air Purifier",
-    price: 149.99,
-    quantity: 90,
-    category: "Home Appliances",
-  },
-  {
-    id: "P12366",
-    name: "Coffee Maker",
-    price: 79.99,
-    quantity: 110,
-    category: "Home Appliances",
-  },
-  {
-    id: "P12367",
-    name: "Instant Pot",
-    price: 99.99,
-    quantity: 130,
-    category: "Home Appliances",
-  },
-  {
-    id: "P12368",
-    name: "Robot Vacuum",
-    price: 299.99,
-    quantity: 70,
-    category: "Home Appliances",
-  },
-  {
-    id: "P12369",
-    name: "Smart Thermostat",
+    name: "Tablet",
+    quantity: 40,
     price: 199.99,
-    quantity: 85,
-    category: "Smart Home",
+    categories: ["electronics"],
   },
   {
-    id: "P12370",
-    name: "Noise Cancelling Headphones",
-    price: 249.99,
-    quantity: 65,
-    category: "Electronics",
+    name: "Printer",
+    quantity: 15,
+    price: 89.99,
+    categories: ["electronics", "office supplies"],
   },
   {
-    id: "P12371",
-    name: "Dash Cam",
-    price: 59.99,
-    quantity: 150,
-    category: "Automotive",
-  },
-  {
-    id: "P12372",
-    name: "Action Camera",
-    price: 199.99,
-    quantity: 90,
-    category: "Electronics",
-  },
-  {
-    id: "P12373",
-    name: "Wireless Charger",
-    price: 39.99,
-    quantity: 220,
-    category: "Accessories",
-  },
-  {
-    id: "P12374",
-    name: "Smart Light Bulbs",
-    price: 49.99,
+    name: "Mouse",
     quantity: 300,
-    category: "Smart Home",
+    price: 14.99,
+    categories: ["electronics", "computers"],
   },
   {
-    id: "P12375",
-    name: "Streaming Device",
-    price: 49.99,
-    quantity: 180,
-    category: "Electronics",
+    name: "Keyboard",
+    quantity: 200,
+    price: 29.99,
+    categories: ["electronics", "computers"],
   },
   {
-    id: "P12376",
-    name: "Home Security Camera",
+    name: "USB Drive",
+    quantity: 150,
+    price: 9.99,
+    categories: ["electronics"],
+  },
+  {
+    name: "Smartphone",
+    quantity: 60,
+    price: 699.99,
+    categories: ["electronics"],
+  },
+  {
+    name: "Camera",
+    quantity: 25,
+    price: 299.99,
+    categories: ["electronics"],
+  },
+  {
+    name: "Speakers",
+    quantity: 80,
+    price: 39.99,
+    categories: ["electronics"],
+  },
+  {
+    name: "Lamp",
+    quantity: 200,
+    price: 19.99,
+    categories: ["furniture"],
+  },
+  {
+    name: "Bookshelf",
+    quantity: 10,
+    price: 59.99,
+    categories: ["furniture"],
+  },
+  {
+    name: "Calculator",
+    quantity: 250,
+    price: 12.99,
+    categories: ["office supplies"],
+  },
+  {
+    name: "Scissors",
+    quantity: 400,
+    price: 2.99,
+    categories: ["office supplies"],
+  },
+  {
+    name: "Stapler",
+    quantity: 500,
+    price: 6.99,
+    categories: ["office supplies"],
+  },
+  {
+    name: "File Cabinet",
+    quantity: 5,
     price: 129.99,
+    categories: ["furniture"],
+  },
+  {
+    name: "Whiteboard",
+    quantity: 50,
+    price: 49.99,
+    categories: ["office supplies"],
+  },
+  {
+    name: "Briefcase",
+    quantity: 20,
+    price: 39.99,
+    categories: ["bags"],
+  },
+  {
+    name: "Laptop Bag",
+    quantity: 45,
+    price: 24.99,
+    categories: ["bags"],
+  },
+  {
+    name: "Projector",
+    quantity: 12,
+    price: 399.99,
+    categories: ["electronics"],
+  },
+  {
+    name: "Router",
+    quantity: 60,
+    price: 79.99,
+    categories: ["electronics"],
+  },
+  {
+    name: "Modem",
+    quantity: 40,
+    price: 69.99,
+    categories: ["electronics"],
+  },
+  {
+    name: "Desk Organizer",
     quantity: 100,
-    category: "Smart Home",
+    price: 14.99,
+    categories: ["office supplies"],
+  },
+  {
+    name: "Paper Shredder",
+    quantity: 30,
+    price: 89.99,
+    categories: ["office supplies"],
+  },
+  {
+    name: "Office Chair Mat",
+    quantity: 25,
+    price: 29.99,
+    categories: ["furniture"],
+  },
+  {
+    name: "Cushion",
+    quantity: 50,
+    price: 14.99,
+    categories: ["furniture"],
+  },
+  {
+    name: "Binder",
+    quantity: 600,
+    price: 3.99,
+    categories: ["office supplies"],
+  },
+  {
+    name: "Laptop Stand",
+    quantity: 40,
+    price: 29.99,
+    categories: ["office supplies"],
   },
 ];
 
-// Insert sample data into the database
+const users = [
+  {
+    username: "omer_mazig",
+    password: "1234",
+    firstName: "Omer",
+    lastName: "Mazig",
+  },
+  {
+    username: "baba_bubu",
+    password: "5678",
+    firstName: "Baba",
+    lastName: "BuBu",
+  },
+];
+
 async function seedDB() {
-  await connectDB(); // Connect to the database
   try {
-    await Robot.deleteMany({});
-    await Robot.insertMany(products);
+    await connectDB(); // Connect to the database
+    await User.deleteMany({});
+    await Product.deleteMany({});
+
+    // const createdUsers = await User.insertMany(users);
+    const createdUsers = await Promise.all(
+      users.map(async (u) => {
+        const hashedPassword = await bcrypt.hash(u.password, SALT_ROUNDS); // Hash password
+        const user = new User({ ...u, password: hashedPassword }); // Create new user object
+        await user.save(); // Save user to database
+        return user; // Return the saved user object
+      })
+    );
+
+    // Assign each product a user
+    const productsWithUsers = products.map((product, index) => {
+      return {
+        ...product,
+        user: createdUsers[index % createdUsers.length]._id,
+      };
+    });
+
+    const createdProducts = await Product.insertMany(productsWithUsers);
+
+    // Update users with the products they are selling
+    for (let product of createdProducts) {
+      await User.findByIdAndUpdate(
+        product.user,
+        { $push: { products: product._id } },
+        { new: true, useFindAndModify: false }
+      );
+    }
+
     console.log("Database seeded");
   } catch (err) {
     console.error(err);
