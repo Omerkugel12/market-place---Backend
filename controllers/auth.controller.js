@@ -9,10 +9,15 @@ const SALT_ROUNDS = 10; // Number of rounds to generate salt. 10 is recommended 
 async function register(req, res) {
   console.log("register");
   try {
-    const { username, password } = req.body;
+    const { username, password, firstName, lastName } = req.body;
 
     const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS); // Hash password
-    const user = new User({ username, password: hashedPassword }); // Create new user object
+    const user = new User({
+      username,
+      password: hashedPassword,
+      firstName,
+      lastName,
+    }); // Create new user object
     await user.save(); // Save user to database
 
     res.status(201).json({ message: "User registered successfully" });
