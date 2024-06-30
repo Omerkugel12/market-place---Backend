@@ -28,9 +28,11 @@ async function main() {
 
   const authRoutes = require("./routes/auth.route");
   const protectedRoutes = require("./routes/protected.route");
+  const userRoutes = require("./routes/user.route");
 
   app.use("/api/auth", authRoutes);
   app.use("/api/protected", verifyToken, protectedRoutes);
+  app.use("/api/user", userRoutes);
 
   // START SERVER
   app.listen(PORT, () => {
