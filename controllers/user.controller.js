@@ -10,12 +10,12 @@ async function getUserById(req, res) {
     console.log(error);
     if (error.name === "CastError") {
       console.log(
-        `user.controller, getUserById. User not found with id: ${id}`
+        `user.controller, getUserById. User not found with id: ${userId}`
       );
       return res.status(404).json({ message: "User not found" });
     }
     console.log(
-      `user.controller, getUserById. Error while getting user with id: ${id}`,
+      `user.controller, getUserById. Error while getting user with id: ${userId}`,
       error.name
     );
     res.status(500).json({ message: error.mesagge });
