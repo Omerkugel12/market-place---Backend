@@ -4,7 +4,8 @@ const { JWT_SECRET } = process.env;
 
 function verifyToken(req, res, next) {
   // Get token from header, the client should be responsible for sending the token
-  const token = req.header("Authorization");
+  const token = req.header("Authorization").split(" ")[1];
+
   if (!token) return res.status(401).json({ error: "Access denied" });
 
   try {

@@ -16,7 +16,7 @@ router.get("/", getProducts);
 router.get("/count", getProductsCount);
 router.get("/:id", getProductById);
 router.delete("/:id", deleteProduct);
-router.post("/", addProduct);
+router.post("/", verifyToken, addProduct);
 router.put("/:id", editProduct);
 
 module.exports = router;
