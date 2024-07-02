@@ -64,6 +64,9 @@ async function deleteProduct(req, res) {
   const { id } = req.params;
   try {
     const deletedProduct = await Product.findByIdAndDelete(id);
+    await User.findByIdAndUpdate(req.userId, {
+      $pull: { products: deleteProduct._id },
+    });
     res.status(200).json({ message: "Product deleted" });
   } catch (error) {
     if (error.name === "CastError") {
