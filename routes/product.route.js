@@ -1,5 +1,8 @@
 const express = require("express");
-const { verifyToken } = require("../middleware/auth.middleware");
+const {
+  verifyToken,
+  authorizeProductOwner,
+} = require("../middleware/auth.middleware");
 
 const {
   getProducts,
@@ -15,7 +18,7 @@ const router = express.Router();
 router.get("/", getProducts);
 router.get("/count", getProductsCount);
 router.get("/:id", getProductById);
-router.delete("/:id", deleteProduct);
+router.delete("/:id", verifyToken, authorizeProductOwner, deleteProduct);
 router.post("/", verifyToken, addProduct);
 router.put("/:id", editProduct);
 

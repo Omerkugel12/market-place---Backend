@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const Product = require("../models/product.model");
 
 const { JWT_SECRET } = process.env;
 
@@ -17,4 +18,16 @@ function verifyToken(req, res, next) {
   }
 }
 
-module.exports = { verifyToken };
+async function authorizeProductOwner(req, res, next) {
+  const { id } = req.params;
+  const product = await Product.findById(id);
+  if (!product) {
+    return res.status(400).json({ message: "product not found" });
+  }
+  if (product.user.toString() !== req.userId) {
+    return res.status(403).json({ message: "user not authorized" });
+  }
+  next();
+}
+
+module.exports = { verifyToken, authorizeProductOwner };
