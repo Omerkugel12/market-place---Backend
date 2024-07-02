@@ -20,6 +20,6 @@ router.get("/count", getProductsCount);
 router.get("/:id", getProductById);
 router.delete("/:id", verifyToken, authorizeProductOwner, deleteProduct);
 router.post("/", verifyToken, addProduct);
-router.put("/:id", editProduct);
+router.put("/:id", verifyToken, authorizeProductOwner, editProduct);
 
 module.exports = router;
