@@ -1,6 +1,7 @@
 // const { query } = require("express");
 const { buildCriteria } = require("../helpers/product.helper");
 const Product = require("../models/product.model");
+const User = require("../models/user.model");
 
 async function getProductsCount(req, res) {
   const { query } = req;
@@ -79,16 +80,23 @@ async function deleteProduct(req, res) {
 }
 
 async function addProduct(req, res) {
-  const productToAdd = req.body;
-  const newProduct = new Product(productToAdd);
   try {
+    const newProduct = new Product(req.body);
+    newProduct.user = req.userId; // Add the user id to the product
     const savedProduct = await newProduct.save();
+
+    //update the user's products array
+    await User.findByIdAndUpdate(req.userId, {
+      $push: { products: savedProduct._id },
+    });
+
     res.status(201).json(savedProduct);
   } catch (error) {
     console.log("product.controller, addProduct. Error while creating product");
+    res.status(500).json({ message: "Server error while creating robot" });
     if (error.name === "ValidationError") {
       console.log(`product.controller, addProduct. ${error.mesage} `);
-      res.status(500).json({ message: "Server error while creating robot" });
+      res.status(400).json({ message: error.mesage });
     }
   }
 }
